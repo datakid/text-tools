@@ -1,0 +1,80 @@
+:root {
+  --c-canvas: oklch(96.4% 0.010 92);
+  --c-surface: oklch(99.4% 0.004 92);
+  --c-sunken: oklch(94.6% 0.012 92);
+  --c-rule: oklch(90.5% 0.012 92);
+  --c-rule-firm: oklch(82.0% 0.015 92);
+
+  --c-ink: oklch(26.0% 0.021 188);
+  --c-ink-2: oklch(46.0% 0.018 180);
+  --c-ink-3: oklch(62.0% 0.014 160);
+
+  --c-brand: #1d2b2a;
+  --c-brand-gold: #e0ad3c;
+  --c-verdigris: oklch(56.0% 0.085 187);
+  --c-verdigris-wash: oklch(94.0% 0.030 187);
+  --c-on-accent: #ffffff;
+  --c-madder: oklch(55.0% 0.120 32);
+  --c-madder-wash: oklch(94.5% 0.030 32);
+  --c-iris: oklch(54.0% 0.060 305);
+  --c-iris-wash: oklch(94.5% 0.022 305);
+  --c-lichen: oklch(57.0% 0.090 150);
+  --c-ochre: oklch(74.0% 0.120 80);
+  --c-ochre-wash: oklch(92.0% 0.075 88);
+
+  --f-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --f-ui: 'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'Iosevka Web', 'Iosevka', ui-monospace, 'SF Mono', Menlo, monospace;
+  --fs-0: 11.5px;
+  --fs-1: 13px;
+  --fs-2: 14px;
+  --fs-3: 16px;
+  --fs-5: 22px;
+  --fs-6: 30px;
+  --lh-tight: 1.25;
+  --lh-body: 1.5;
+  --lh-code: 1.55;
+
+  --r-sm: 8px;
+  --r: 10px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-pill: 999px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --gap: 10px;
+  --hair: 1px solid var(--c-rule);
+  --sh-1: 0 1px 2px oklch(30% 0.02 190 / .06), 0 1px 1px oklch(30% 0.02 190 / .04);
+  --sh-2: 0 2px 6px oklch(30% 0.02 190 / .06), 0 8px 24px oklch(30% 0.02 190 / .07);
+  --sh-3: 0 12px 32px oklch(25% 0.02 190 / .14), 0 4px 10px oklch(25% 0.02 190 / .08);
+  --t-fast: 140ms cubic-bezier(.2,.7,.2,1);
+  --t-pop: 220ms cubic-bezier(.2,.9,.25,1.15);
+  --focus: 0 0 0 3px color-mix(in oklch, var(--c-verdigris) 35%, transparent);
+  --chev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%23778' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+[data-theme="dim"] {
+  --c-canvas: oklch(18.5% 0.012 200);
+  --c-surface: oklch(23.0% 0.014 200);
+  --c-sunken: oklch(20.5% 0.013 200);
+  --c-rule: oklch(30.0% 0.014 200);
+  --c-rule-firm: oklch(38.0% 0.016 200);
+  --c-ink: oklch(93.0% 0.010 92);
+  --c-ink-2: oklch(75.0% 0.012 150);
+  --c-ink-3: oklch(58.0% 0.012 180);
+  --c-verdigris: oklch(74.0% 0.095 187);
+  --c-verdigris-wash: oklch(31.0% 0.045 187);
+  --c-on-accent: oklch(18% 0.02 190);
+  --c-madder: oklch(70.0% 0.120 32);
+  --c-madder-wash: oklch(30.0% 0.060 32);
+  --c-iris-wash: oklch(30.0% 0.040 305);
+  --c-ochre: oklch(80.0% 0.120 85);
+  --c-ochre-wash: oklch(36.0% 0.070 88);
+  --sh-1: 0 1px 2px oklch(0% 0 0 / .3);
+  --sh-2: 0 2px 6px oklch(0% 0 0 / .25), 0 8px 24px oklch(0% 0 0 / .3);
+  --sh-3: 0 16px 40px oklch(0% 0 0 / .5), 0 4px 10px oklch(0% 0 0 / .3);
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Sluice — local-first text workbench",
+  "short_name": "Sluice",
+  "description": "Build repeatable text-processing pipelines that run entirely in your browser.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#1d2b2a",
+  "icons": [
+    { "src": "icons/sluice.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
