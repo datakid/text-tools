@@ -69,7 +69,9 @@ export default {
         } else if (p.mode === 'numeric') {
           const an = parseFloat(a.line);
           const bn = parseFloat(b.line);
-          cmp = (Number.isNaN(an) ? Infinity : an) - (Number.isNaN(bn) ? Infinity : bn);
+          const aBad = Number.isNaN(an);
+          const bBad = Number.isNaN(bn);
+          cmp = aBad && bBad ? 0 : aBad ? 1 : bBad ? -1 : an - bn;
         } else {
           cmp = a.line.length - b.line.length;
         }
@@ -89,6 +91,16 @@ export default {
       params: { mode: 'lexical', locale: 'en', reverse: false, caseInsensitive: false },
       in: ['solo'],
       out: ['solo']
+    },
+    {
+      params: { mode: 'numeric', locale: 'en', reverse: false, caseInsensitive: false },
+      in: ['10\nx\n2\ny\n-1'],
+      out: ['-1\n2\n10\nx\ny']
+    },
+    {
+      params: { mode: 'natural', locale: 'en', reverse: false, caseInsensitive: false },
+      in: ['file10\nfile2\nfile1'],
+      out: ['file1\nfile2\nfile10']
     }
   ]
 };

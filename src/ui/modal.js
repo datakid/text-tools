@@ -40,9 +40,10 @@ export function openModal(title, bodyEl, { onClose, subtitle, footer, size } = {
     closed = true;
     document.removeEventListener('keydown', onKey, true);
     backdrop.classList.add('closing');
+    if (!document.querySelector('.modal-backdrop:not(.closing)')) document.body.classList.remove('modal-open');
     const done = () => {
       backdrop.remove();
-      if (!document.querySelector('.modal-backdrop')) document.body.classList.remove('modal-open');
+      if (!document.querySelector('.modal-backdrop:not(.closing)')) document.body.classList.remove('modal-open');
       if (previous && previous.focus) previous.focus();
     };
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) done();
@@ -56,7 +57,7 @@ export function openModal(title, bodyEl, { onClose, subtitle, footer, size } = {
   }
 
   function onKey(e) {
-    if (backdrop !== [...document.querySelectorAll('.modal-backdrop')].pop()) return;
+    if (backdrop !== [...document.querySelectorAll('.modal-backdrop:not(.closing)')].pop()) return;
     if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
     if (e.key === 'Tab') {
       const list = focusables();

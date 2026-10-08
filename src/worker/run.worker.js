@@ -52,7 +52,10 @@ self.onmessage = async (e) => {
       const jobId = id;
       cancelledJobs.delete(jobId);
       const inputDocs = docstore.get(payload.docSetKey) || [];
-      const sample = type === 'preview' ? (payload.sampleBytes || 65536) : undefined;
+      const budget = payload.sampleBytes || 262144;
+      const fitsWhole = inputDocs.every((d) => d.text.length <= budget);
+      const sample = type === 'preview' && !fitsWhole ? budget : undefined;
+      const exact = sample === undefined;
       const { docs, key, errors } = await runChain(inputDocs, payload.steps, payload.params || [], {
         sample,
         overrides: payload.overrides || {},
@@ -75,6 +78,8 @@ self.onmessage = async (e) => {
             bytes: new TextEncoder().encode(d.text).length
           })),
           stats: statsFor(docs),
+          inputStats: statsFor(inputDocs),
+          exact,
           errors,
           cache: cacheStats()
         }
@@ -152,6 +157,10 @@ self.onmessage = async (e) => {
       const docs = docstore.get(payload.docSetKey) || [];
       if (payload.mode === 'clip') {
         self.postMessage({ id, ok: true, result: { text: docs.map(d => d.text).join('\n\n') } });
+        return;
+      }
+      if (payload.mode === 'docs') {
+        self.postMessage({ id, ok: true, result: { docs: docs.map(d => ({ name: d.name, text: d.text })) } });
         return;
       }
       self.postMessage({ id, ok: false, error: `Export mode "${payload.mode}" ships in a later phase` });

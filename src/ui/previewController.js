@@ -11,6 +11,11 @@ export function triggerPreview(store, engine) {
   debounceTimer = setTimeout(() => runPreview(store, engine), DEBOUNCE_MS);
 }
 
+export function flushPreview(store, engine) {
+  clearTimeout(debounceTimer);
+  return runPreview(store, engine);
+}
+
 async function runPreview(store, engine) {
   const state = store.get();
   if (!state.docSetKey) return;
@@ -20,6 +25,7 @@ async function runPreview(store, engine) {
   const start = performance.now();
   const job = engine.preview(state.docSetKey, workflow.steps, workflow.params);
   activeJob = job;
+  store.set({ busy: true });
 
   try {
     const result = await job.promise;
@@ -28,13 +34,16 @@ async function runPreview(store, engine) {
       previewDocSetKey: result.docSetKey,
       docsMeta: result.docsMeta,
       stats: result.stats,
+      inputStats: result.inputStats,
+      previewExact: Boolean(result.exact),
       errors: result.errors || [],
       lastRunMs: Math.round(performance.now() - start),
-      previewMode: true
+      previewMode: true,
+      busy: false
     });
   } catch (e) {
     if (activeJob !== job) return;
-    store.set({ errors: [{ message: e.message }] });
+    store.set({ errors: [{ message: e.message }], busy: false });
   }
 }
 
@@ -46,6 +55,7 @@ export async function triggerRun(store, engine, overrides = {}) {
   const start = performance.now();
   const job = engine.run(state.docSetKey, workflow.steps, workflow.params, overrides);
   activeJob = job;
+  store.set({ busy: true });
 
   try {
     const result = await job.promise;
@@ -54,9 +64,11 @@ export async function triggerRun(store, engine, overrides = {}) {
       runDocSetKey: result.docSetKey,
       docsMeta: result.docsMeta,
       stats: result.stats,
+      inputStats: result.inputStats,
       errors: result.errors || [],
       lastRunMs: Math.round(performance.now() - start),
-      previewMode: false
+      previewMode: false,
+      busy: false
     });
     if (!result.errors || result.errors.length === 0) {
       persist
@@ -72,6 +84,6 @@ export async function triggerRun(store, engine, overrides = {}) {
     }
   } catch (e) {
     if (activeJob !== job) return;
-    store.set({ errors: [{ message: e.message }] });
+    store.set({ errors: [{ message: e.message }], busy: false });
   }
 }

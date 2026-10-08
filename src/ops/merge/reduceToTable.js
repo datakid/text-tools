@@ -16,7 +16,7 @@ export default {
   run(docs, p) {
     if (docs.length === 0) return docs;
     const lineSets = docs.map((d) => d.text.split(/\r\n|\r|\n/));
-    const maxLen = Math.max(...lineSets.map((l) => l.length));
+    const maxLen = lineSets.reduce((m, l) => Math.max(m, l.length), 0);
     const rows = [];
     if (p.includeHeader) rows.push(docs.map((d) => d.name).join(p.separator));
     for (let i = 0; i < maxLen; i++) {

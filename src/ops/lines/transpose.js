@@ -23,7 +23,7 @@ export default {
     const outSep = p.outputSeparator || p.separator;
     return docs.map((d) => {
       const rows = d.text.split(/\r\n|\r|\n/).map((l) => l.split(p.separator));
-      const cols = Math.max(0, ...rows.map((r) => r.length));
+      const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
       const out = [];
       for (let c = 0; c < cols; c++) {
         out.push(rows.map((r) => (r[c] !== undefined ? r[c] : '')).join(outSep));

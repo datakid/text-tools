@@ -8,6 +8,8 @@ export const MANIFEST = [
   { id: 'text.truncate', group: 'Text', name: 'Truncate', cost: 'linear', load: () => import('./text/truncate.js') },
   { id: 'text.wrap', group: 'Text', name: 'Wrap', cost: 'linear', load: () => import('./text/wrap.js') },
   { id: 'text.slug', group: 'Text', name: 'Slugify', cost: 'linear', load: () => import('./text/slug.js') },
+  { id: 'text.removeChars', group: 'Text', name: 'Remove characters', cost: 'linear', load: () => import('./text/removeChars.js') },
+  { id: 'text.smartQuotes', group: 'Text', name: 'Straighten / curl quotes', cost: 'linear', load: () => import('./text/smartQuotes.js') },
 
   { id: 'ws.trimLines', group: 'Whitespace', name: 'Trim lines', cost: 'linear', load: () => import('./ws/trimLines.js') },
   { id: 'ws.trimEdges', group: 'Whitespace', name: 'Trim document edges', cost: 'linear', load: () => import('./ws/trimEdges.js') },
@@ -29,6 +31,10 @@ export const MANIFEST = [
   { id: 'lines.prefixSuffix', group: 'Lines', name: 'Add prefix/suffix', cost: 'linear', load: () => import('./lines/prefixSuffix.js') },
   { id: 'lines.columnize', group: 'Lines', name: 'Columnize', cost: 'linear', load: () => import('./lines/columnize.js') },
   { id: 'lines.transpose', group: 'Lines', name: 'Transpose', cost: 'linear', load: () => import('./lines/transpose.js') },
+  { id: 'lines.sample', group: 'Lines', name: 'Random sample lines', cost: 'linear', load: () => import('./lines/sample.js') },
+  { id: 'lines.align', group: 'Lines', name: 'Align columns', cost: 'linear', load: () => import('./lines/align.js') },
+  { id: 'lines.toList', group: 'Lines', name: 'Lines to list', cost: 'linear', load: () => import('./lines/toList.js') },
+  { id: 'lines.splitToLines', group: 'Lines', name: 'Split items onto lines', cost: 'linear', load: () => import('./lines/splitToLines.js') },
 
   { id: 'find.replace', group: 'Find', name: 'Find & replace', cost: 'linear', load: () => import('./find/replace.js') },
   { id: 'find.replaceMany', group: 'Find', name: 'Replace many (translation table)', cost: 'linear', load: () => import('./find/replaceMany.js') },
@@ -49,8 +55,8 @@ export const MANIFEST = [
   { id: 'merge.zipLines', group: 'Merge', name: 'Zip lines', cost: 'linear', load: () => import('./merge/zipLines.js') },
   { id: 'merge.joinLines', group: 'Merge', name: 'Join lines', cost: 'linear', load: () => import('./merge/joinLines.js') },
   { id: 'merge.reduceToTable', group: 'Merge', name: 'Reduce to table', cost: 'linear', load: () => import('./merge/reduceToTable.js') },
-  { id: 'merge.wrapEach', group: 'Merge', name: 'Wrap each document', cost: 'linear', load: () => import('./merge/wrapEach.js') }
-,
+  { id: 'merge.wrapEach', group: 'Merge', name: 'Wrap each document', cost: 'linear', load: () => import('./merge/wrapEach.js') },
+
   { id: 'extract.byRegex', group: 'Extract', name: 'Extract by pattern', cost: 'linear', load: () => import('./extract/byRegex.js') },
   { id: 'extract.between', group: 'Extract', name: 'Extract between delimiters', cost: 'linear', load: () => import('./extract/between.js') },
   { id: 'extract.emails', group: 'Extract', name: 'Extract emails', cost: 'linear', load: () => import('./extract/emails.js') },
@@ -74,6 +80,7 @@ export const MANIFEST = [
   { id: 'gen.product', group: 'Gen', name: 'Cartesian product', cost: 'linear', load: () => import('./gen/product.js') },
   { id: 'gen.cycle', group: 'Gen', name: 'Cycle values onto lines', cost: 'linear', load: () => import('./gen/cycle.js') },
   { id: 'gen.lorem', group: 'Gen', name: 'Lorem ipsum', cost: 'linear', load: () => import('./gen/lorem.js') },
+  { id: 'gen.uuid', group: 'Gen', name: 'Generate UUIDs', cost: 'linear', load: () => import('./gen/uuid.js') },
 
   { id: 'code.base64', group: 'Code', name: 'Base64', cost: 'linear', load: () => import('./code/base64.js') },
   { id: 'code.urlEncode', group: 'Code', name: 'URL encode/decode', cost: 'linear', load: () => import('./code/urlEncode.js') },
@@ -84,8 +91,10 @@ export const MANIFEST = [
   { id: 'code.hex', group: 'Code', name: 'Hex', cost: 'linear', load: () => import('./code/hex.js') },
   { id: 'code.rot13', group: 'Code', name: 'ROT13', cost: 'linear', load: () => import('./code/rot13.js') },
   { id: 'code.quotedPrintable', group: 'Code', name: 'Quoted-printable', cost: 'linear', load: () => import('./code/quotedPrintable.js') },
-  { id: 'code.hash', group: 'Code', name: 'Hash (SHA-256)', cost: 'linear', load: () => import('./code/hash.js') }
-,
+  { id: 'code.hash', group: 'Code', name: 'Hash (SHA-256)', cost: 'linear', load: () => import('./code/hash.js') },
+  { id: 'code.jwtDecode', group: 'Code', name: 'Decode JWT', cost: 'linear', load: () => import('./code/jwtDecode.js') },
+  { id: 'code.unicodeEscape', group: 'Code', name: 'Unicode escape', cost: 'linear', load: () => import('./code/unicodeEscape.js') },
+
   { id: 'data.jsonFormat', group: 'Data', name: 'Format JSON', cost: 'linear', load: () => import('./data/jsonFormat.js') },
   { id: 'data.jsonMinify', group: 'Data', name: 'Minify JSON', cost: 'linear', load: () => import('./data/jsonMinify.js') },
   { id: 'data.jsonSortKeys', group: 'Data', name: 'Sort JSON keys', cost: 'linear', load: () => import('./data/jsonSortKeys.js') },
@@ -95,6 +104,7 @@ export const MANIFEST = [
   { id: 'data.csvReshape', group: 'Data', name: 'Reshape CSV columns', cost: 'linear', load: () => import('./data/csvReshape.js') },
   { id: 'data.tsvSwap', group: 'Data', name: 'Swap CSV/TSV', cost: 'linear', load: () => import('./data/tsvSwap.js') },
   { id: 'data.toMarkdownTable', group: 'Data', name: 'To Markdown table', cost: 'linear', load: () => import('./data/toMarkdownTable.js') },
+  { id: 'data.jsonValidate', group: 'Data', name: 'Validate JSON', cost: 'linear', load: () => import('./data/jsonValidate.js') },
 
   { id: 'analyze.stats', group: 'Analyze', name: 'Document stats', cost: 'linear', load: () => import('./analyze/stats.js') },
   { id: 'analyze.frequency', group: 'Analyze', name: 'Word/char/n-gram frequency', cost: 'linear', load: () => import('./analyze/frequency.js') },

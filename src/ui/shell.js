@@ -9,6 +9,34 @@ import { exportWorkflow, tryParseWorkflow, readFileAsText } from './workflowFile
 import { ingestText } from './ingest.js';
 import { alertDialog, promptDialog, confirmDialog } from './modal.js';
 import { createWorkflow } from '../core/workflow.js';
+import { openPalette, isPaletteOpen } from './palette.js';
+import { openModal } from './modal.js';
+import { MANIFEST } from '../ops/index.js';
+import { CATEGORIES } from '../core/catalog.js';
+import { toast } from './toast.js';
+
+const MODKEY = /Mac|iPhone|iPad/.test(navigator.platform || '') ? '\u2318' : 'Ctrl';
+
+function openShortcuts() {
+  const body = document.createElement('div');
+  const rows = [
+    ['Action library', `${MODKEY} K`],
+    ['Run on full input', `${MODKEY} \u21B5`],
+    ['Copy output', `${MODKEY} \u21E7 C`],
+    ['Undo / redo pipeline', `${MODKEY} Z / ${MODKEY} \u21E7 Z`],
+    ['In library: add step', '\u21B5'],
+    ['In library: apply to input now', '\u21E7 \u21B5'],
+    ['In library: switch category', 'Alt \u2190 \u2192'],
+    ['In library: star favorite', 'Alt S'],
+    ['Quick bar: apply to input now', '\u21E7 click'],
+    ['Focused step: reorder', 'Alt \u2191 \u2193'],
+    ['Focused step: enable / disable', 'E'],
+    ['Focused step: delete', 'Del'],
+    ['This help', '?']
+  ];
+  body.innerHTML = `<dl class="shortcut-list">${rows.map(([a, k]) => `<dt>${a}</dt><dd>${k.split(' ').map((x) => (x === '/' ? ' / ' : `<kbd>${x}</kbd>`)).join('')}</dd>`).join('')}</dl>`;
+  openModal('Keyboard shortcuts', body, { subtitle: `${MANIFEST.length} actions in ${CATEGORIES.length} categories, all running locally.` });
+}
 
 export function mountShell(root, store, engine, historyController) {
   root.innerHTML = `
@@ -18,6 +46,10 @@ export function mountShell(root, store, engine, historyController) {
       <span style="flex:1"></span>
       <button class="btn btn-ghost mobile-pane-button" id="btn-pipeline" type="button" aria-expanded="false" aria-controls="pane-pipeline">Steps</button>
       <button class="btn btn-ghost mobile-pane-button" id="btn-inspector" type="button" aria-expanded="false" aria-controls="pane-inspector">Edit step</button>
+      <button class="btn btn-soft" id="btn-library-actions" type="button" title="Browse every action by category (${MODKEY}+K)" aria-haspopup="dialog">\u2630 Actions</button>
+      <button class="btn btn-ghost btn-icon" id="btn-undo" type="button" title="Undo (${MODKEY}+Z)" aria-label="Undo">\u21B6</button>
+      <button class="btn btn-ghost btn-icon" id="btn-redo" type="button" title="Redo (${MODKEY}+Shift+Z)" aria-label="Redo">\u21B7</button>
+      <span class="header-sep" aria-hidden="true"></span>
       <button class="btn btn-ghost" id="btn-new" type="button" title="Start a new empty workflow">New</button>
       <button class="btn btn-ghost" id="btn-library" type="button" title="Saved workflows">Workflows</button>
       <button class="btn btn-ghost" id="btn-history" type="button" title="Run history">History</button>
@@ -26,6 +58,7 @@ export function mountShell(root, store, engine, historyController) {
       <button class="btn btn-ghost" id="btn-export" type="button" title="Export as .sluice.json">Export</button>
       <button class="btn btn-ghost" id="btn-import" type="button" title="Import a .sluice.json">Import</button>
       <input type="file" id="import-input" accept=".json" class="hidden">
+      <button class="btn btn-ghost btn-icon" id="btn-help" type="button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
       <button class="btn btn-icon" id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">\u25D1</button>
     </header>
     <div class="app-body">
@@ -92,6 +125,31 @@ export function mountShell(root, store, engine, historyController) {
   });
 
   root.querySelector('#btn-library').addEventListener('click', () => openLibrary(store, historyController));
+  root.querySelector('#btn-library-actions').addEventListener('click', () => openPalette(store, engine));
+  root.querySelector('#btn-help').addEventListener('click', openShortcuts);
+  const undoBtn = root.querySelector('#btn-undo');
+  const redoBtn = root.querySelector('#btn-redo');
+  undoBtn.addEventListener('click', () => { historyController.undo(); paintHistory(); });
+  redoBtn.addEventListener('click', () => { historyController.redo(); paintHistory(); });
+  function paintHistory() {
+    undoBtn.disabled = !historyController.canUndo();
+    redoBtn.disabled = !historyController.canRedo();
+  }
+  store.subscribe((state, changed) => { if (changed.includes('workflow')) requestAnimationFrame(paintHistory); });
+  paintHistory();
+
+  window.addEventListener('keydown', (e) => {
+    const t = e.target;
+    const typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      if (document.body.classList.contains('modal-open')) return;
+      e.preventDefault();
+      openPalette(store, engine);
+    } else if (e.key === '?' && !typing && !isPaletteOpen() && !document.body.classList.contains('modal-open')) {
+      e.preventDefault();
+      openShortcuts();
+    }
+  });
   root.querySelector('#btn-history').addEventListener('click', () => openRunHistory(store, engine, historyController));
   root.querySelector('#btn-params').addEventListener('click', () => openParamsEditor(store));
   root.querySelector('#btn-export').addEventListener('click', () => exportWorkflow(store.get().workflow));
@@ -107,6 +165,7 @@ export function mountShell(root, store, engine, historyController) {
     if (wf) {
       historyController.resetTo(wf);
       store.set({ workflow: wf, selectedStepId: null });
+      toast(`Imported \u201C${wf.meta.name}\u201D`);
     } else {
       alertDialog('Couldn\u2019t import', 'This file is not a valid Sluice workflow.');
     }
@@ -126,7 +185,10 @@ export function mountShell(root, store, engine, historyController) {
       return;
     }
     const input = document.querySelector('#input-text');
-    if (input) input.value = text;
+    if (input) {
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+    }
     ingestText(store, engine, text, file.name);
   });
 

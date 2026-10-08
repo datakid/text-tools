@@ -1,4 +1,5 @@
 import { validate, visibleParams } from '../core/schema.js';
+import { encodeEscapes, decodeEscapes, isMultilineParam } from '../core/escapes.js';
 
 export function buildForm(container, paramsSchema, values, onChange) {
   container.innerHTML = '';
@@ -93,18 +94,31 @@ export function buildForm(container, paramsSchema, values, onChange) {
         const parsed = p.type === 'int' ? parseInt(input.value, 10) : parseFloat(input.value);
         onChange(p.key, parsed);
       });
-    } else if (p.type === 'code') {
+    } else if (p.type === 'code' || ((p.type === 'template' || p.type === 'string') && isMultilineParam(p))) {
       input = document.createElement('textarea');
       input.className = 'code-input';
       input.spellcheck = false;
-      input.rows = 8;
+      input.rows = p.type === 'code' ? 8 : 4;
+      input.value = values[p.key] ?? '';
+      input.addEventListener('input', () => onChange(p.key, input.value));
+    } else if (p.type === 'regex') {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'mono-input';
+      input.spellcheck = false;
       input.value = values[p.key] ?? '';
       input.addEventListener('input', () => onChange(p.key, input.value));
     } else {
       input = document.createElement('input');
       input.type = 'text';
-      input.value = values[p.key] ?? '';
-      input.addEventListener('input', () => onChange(p.key, input.value));
+      input.spellcheck = false;
+      input.value = encodeEscapes(values[p.key]);
+      input.addEventListener('input', () => onChange(p.key, decodeEscapes(input.value)));
+      if (!p.help && /separator|delimiter|gap|prefix|suffix|replace with|find$/i.test(p.label || '')) {
+        hints = document.createElement('div');
+        hints.className = 'field-help';
+        hints.textContent = 'Type \\n for a newline, \\t for a tab.';
+      }
 
       if (p.type === 'template' && p.tokens?.length) {
         hints = document.createElement('div');
@@ -116,7 +130,7 @@ export function buildForm(container, paramsSchema, values, onChange) {
           chip.textContent = tok;
           chip.addEventListener('click', () => {
             input.value += tok;
-            onChange(p.key, input.value);
+            onChange(p.key, decodeEscapes(input.value));
           });
           hints.appendChild(chip);
         }
