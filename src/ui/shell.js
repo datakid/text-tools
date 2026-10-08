@@ -42,9 +42,9 @@ function openShortcuts() {
 export function mountShell(root, store, engine, historyController) {
   root.innerHTML = `
     <header class="app-header">
-      <a class="brand" href="./" aria-label="Sluice home"><img src="icons/sluice.svg" alt="" width="22" height="22"><span>Sluice</span></a>
+      <a class="brand" href="./" aria-label="Sluice home"><img id="brand-logo" src="icons/sluice-light.svg" alt="" width="24" height="24"><span>Sluice</span></a>
       <button id="wf-name" class="wf-name" type="button" title="Rename workflow"></button>
-      <span style="flex:1"></span>
+      <span class="header-spacer" aria-hidden="true"></span>
       <button class="btn btn-ghost mobile-pane-button" id="btn-pipeline" type="button" aria-expanded="false" aria-controls="pane-pipeline">Steps</button>
       <button class="btn btn-ghost mobile-pane-button" id="btn-inspector" type="button" aria-expanded="false" aria-controls="pane-inspector">Edit step</button>
       <button class="btn btn-soft" id="btn-library-actions" type="button" title="Browse every action by category (${MODKEY}+K)" aria-haspopup="dialog">\u2630 Actions</button>
@@ -59,18 +59,18 @@ export function mountShell(root, store, engine, historyController) {
       <button class="btn btn-ghost" id="btn-export" type="button" title="Export as .sluice.json">Export</button>
       <button class="btn btn-ghost" id="btn-import" type="button" title="Import a .sluice.json">Import</button>
       <button class="btn btn-ghost" id="btn-share" type="button" title="Copy a link that contains this workflow">Share</button>
-      <input type="file" id="import-input" accept=".json" class="hidden">
+      <input type="file" id="import-input" accept=".json" class="hidden" aria-label="Import workflow file">
       <button class="btn btn-ghost btn-icon" id="btn-help" type="button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
       <button class="btn btn-icon" id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">\u25D1</button>
     </header>
     <div class="app-body">
-      <div class="pane pane-pipeline" id="pane-pipeline"></div>
-      <div class="resizer" id="resizer-left"></div>
-      <div class="pane pane-canvas" id="pane-canvas"></div>
-      <div class="resizer" id="resizer-right"></div>
-      <div class="pane pane-inspector" id="pane-inspector"></div>
+      <aside class="pane pane-pipeline" id="pane-pipeline" aria-label="Pipeline steps"></aside>
+      <div class="resizer" id="resizer-left" aria-hidden="true"></div>
+      <main class="pane pane-canvas" id="pane-canvas" aria-label="Editor"></main>
+      <div class="resizer" id="resizer-right" aria-hidden="true"></div>
+      <aside class="pane pane-inspector" id="pane-inspector" aria-label="Step settings"></aside>
     </div>
-    <div class="status-strip" id="status-strip"></div>
+    <footer class="status-strip" id="status-strip"></footer>
   `;
 
   const panePipeline = root.querySelector('#pane-pipeline');
@@ -102,8 +102,17 @@ export function mountShell(root, store, engine, historyController) {
   });
 
   function paintTheme(theme) {
-    if (theme === 'dim') document.documentElement.setAttribute('data-theme', 'dim');
+    const dim = theme === 'dim';
+    if (dim) document.documentElement.setAttribute('data-theme', 'dim');
     else document.documentElement.removeAttribute('data-theme');
+    const icon = `icons/sluice-${dim ? 'dark' : 'light'}.svg`;
+    const logo = root.querySelector('#brand-logo');
+    if (logo) logo.src = icon;
+    const link = document.querySelector('link[rel="icon"]');
+    if (link) link.href = icon;
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => { m.content = dim ? '#1d2b2a' : '#f6f3ec'; });
+    themeToggle.setAttribute('aria-pressed', String(dim));
+    themeToggle.title = dim ? 'Switch to light mode' : 'Switch to dark mode';
   }
 
   themeToggle.addEventListener('click', () => {

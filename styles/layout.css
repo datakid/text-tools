@@ -3,7 +3,8 @@
 
 .brand { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--c-ink); text-decoration: none; font-family: var(--f-display); font-size: 17px; font-weight: 650; letter-spacing: -.015em; padding: 2px 10px 2px 2px; border-radius: var(--r-pill); transition: background var(--t-fast); }
 .brand:hover { background: var(--c-sunken); }
-.brand img { display: block; border-radius: 8px; box-shadow: var(--sh-1); }
+.brand img { display: block; width: 24px; height: 24px; flex: none; }
+.header-spacer { flex: 1; }
 
 .app-header {
   height: 52px;
@@ -79,7 +80,7 @@
   #app { padding: 6px; gap: 6px; }
   .app-header { overflow-x: auto; white-space: nowrap; height: 52px; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); padding-right: 40px; }
   .app-header > * { flex-shrink: 0; }
-  .app-header #wf-name, .app-header > span[style*="flex:1"] { display: none; }
+  .app-header #wf-name, .app-header > .header-spacer { display: none; }
   .app-header .mobile-pane-button { display: inline-flex; }
   .app-header .header-sep { display: none; }
   .app-body { grid-template-columns: minmax(0, 1fr); position: relative; }

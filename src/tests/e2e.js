@@ -76,7 +76,8 @@ suite('Boot & layout', () => {
     assert.ok($('#pane-pipeline') && $('#pane-canvas') && $('#pane-inspector'), 'panes');
     assert.ok($$('.quick-chip').length >= 10, 'quick chips');
     assert.ok($('#btn-add-step'), 'add step');
-    assert.ok($('link[rel="icon"]').getAttribute('href').endsWith('sluice.svg'), 'favicon');
+    const theme = state().theme;
+    assert.ok($('link[rel="icon"]').getAttribute('href').endsWith(theme === 'dim' ? 'sluice-dark.svg' : 'sluice-light.svg'), 'favicon follows theme');
   }, { timeout: 60000 });
   test('empty pipeline shows recipe shortcuts', () => {
     assert.ok($$('.recipe-chip').length >= 3);
@@ -376,9 +377,12 @@ suite('Persistence & safety', () => {
   });
   test('theme toggle switches data-theme', async () => {
     const before = doc.documentElement.getAttribute('data-theme');
+    const iconBefore = $('link[rel="icon"]').getAttribute('href');
     $('#theme-toggle').click();
     await sleep(30);
     assert.ok(doc.documentElement.getAttribute('data-theme') !== before);
+    assert.ok($('link[rel="icon"]').getAttribute('href') !== iconBefore, 'favicon swapped');
+    assert.eq($('#brand-logo').getAttribute('src'), $('link[rel="icon"]').getAttribute('href'), 'logo matches favicon');
     $('#theme-toggle').click();
   });
 });

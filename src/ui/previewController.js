@@ -11,11 +11,6 @@ export function triggerPreview(store, engine) {
   debounceTimer = setTimeout(() => runPreview(store, engine), DEBOUNCE_MS);
 }
 
-export function flushPreview(store, engine) {
-  clearTimeout(debounceTimer);
-  return runPreview(store, engine);
-}
-
 async function runPreview(store, engine) {
   const state = store.get();
   if (!state.docSetKey) return;

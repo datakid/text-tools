@@ -9,10 +9,6 @@ export function isEphemeral() {
   return ephemeral;
 }
 
-export function setEphemeral(value) {
-  ephemeral = Boolean(value);
-}
-
 export function readLocal(key, fallback = null) {
   if (ephemeral) return memory.has(key) ? memory.get(key) : fallback;
   try {

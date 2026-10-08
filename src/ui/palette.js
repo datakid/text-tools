@@ -46,10 +46,6 @@ export function isPaletteOpen() {
   return Boolean(openInstance);
 }
 
-export function closePalette() {
-  openInstance?.close();
-}
-
 export function openPalette(store, engine, { category = 'all', query = '' } = {}) {
   if (openInstance) {
     openInstance.focusSearch();

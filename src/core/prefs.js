@@ -44,9 +44,3 @@ export function pushRecent(id) {
   writeJSON(RECENT_KEY, next);
   emit();
 }
-
-export function clearPrefs() {
-  writeJSON(FAV_KEY, []);
-  writeJSON(RECENT_KEY, []);
-  emit();
-}

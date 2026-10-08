@@ -6,6 +6,7 @@ frame.addEventListener('load', async () => {
   const doc = frame.contentDocument;
   const wait = (fn) => new Promise((res) => { const t = setInterval(() => { if (fn()) { clearInterval(t); res(); } }, 40); });
   await wait(() => win.__sluice);
+  if (params.get('theme')) win.__sluice.store.set({ theme: params.get('theme') });
   const input = doc.querySelector('#input-text');
   input.value = 'banana\napple\n  Apple \n\ncherry\nfile10\nfile2';
   input.dispatchEvent(new win.Event('input', { bubbles: true }));

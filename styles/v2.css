@@ -261,5 +261,8 @@
   .col-actions #btn-sample { display: none; }
   .col-meta { display: none; }
   .status-hint { display: none; }
+  #status-main { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .step-tools .btn-icon, .quick-chip { min-height: 32px; }
+  .quick-chip { height: 32px; }
 }
 @media (max-width: 1180px) { .status-hint { display: none; } }

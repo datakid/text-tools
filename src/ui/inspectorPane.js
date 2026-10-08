@@ -73,7 +73,9 @@ export function renderInspectorPane(container, store, engine) {
     const form = container.querySelector('#inspector-form');
 
     container.querySelectorAll('[data-nav]').forEach((b) => b.addEventListener('click', () => {
-      const next = workflow.steps[stepIndex + Number(b.dataset.nav)];
+      const steps = store.get().workflow.steps;
+      const i = steps.findIndex((s) => s.id === step.id);
+      const next = steps[i + Number(b.dataset.nav)];
       if (next) store.set({ selectedStepId: next.id });
     }));
     container.querySelector('#btn-fav-step').addEventListener('click', () => {

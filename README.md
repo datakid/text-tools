@@ -37,8 +37,15 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 - Nothing is uploaded. The data lives only in the URL fragment, which browsers never send to a server.
 - Opening a link loads an editable copy with a fresh id, removes the hash from the address bar, and offers **Undo**. Broken or tampered links show an error toast. Every op and param key is checked by the same rules as file import, so a link can't inject unknown operations.
 
-### Favicon
-`icons/sluice.svg` is a flatter, minimal version of the original mark: a gold gate bar with cream bars on the left and teal bars on the right, on a dark rounded tile. `icons/sluice-mask.svg` is a monochrome version for mask-icon/monochrome use. Both are referenced from `manifest.webmanifest`.
+### Favicon & logo
+- The mark is simplified for small sizes: a gold center bar with two bars on each side, drawn on a 16-unit grid. It stays crisp at 16 px and scales cleanly as SVG.
+- **Theme-aware**:
+  - `icons/sluice-light.svg` uses a cream tile, ink bars and teal bars.
+  - `icons/sluice-dark.svg` uses a dark tile, cream bars and bright teal bars.
+  - The app swaps the favicon, the header logo and `theme-color` whenever the theme toggles.
+  - `icons/sluice.svg` adapts on its own through `prefers-color-scheme`, for pages that don't run the app.
+- `icons/sluice-mask.svg` is the single-color version.
+- `icon-preview.html` shows every size on both backgrounds.
 
 ## Entry points
 | Path | Purpose |
@@ -49,7 +56,14 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 | `tests.html` | Unit + operation suite: **291 tests** |
 | `e2e.html` | End-to-end UI suite, driving the real app in an iframe: **38 tests** |
 | `smoke.html` | Worker smoke test |
-| `demo.html`, `demo-palette.html`, `demo-browse.html`, `demo-input.html` | Pre-staged UI states for screenshots |
+| `demo*.html`, `icon-preview.html` | Pre-staged UI states (light/dark, palette, mobile) and icon sizes for visual QA. Safe to delete before shipping. |
+
+## Ship checklist (verified)
+- 291/291 unit and op tests, 38/38 E2E UI tests, and the smoke test all pass.
+- Clean boot with no app console errors. The only error is the preview host's injected analytics beacon, which the app's strict CSP correctly blocks.
+- Light and dark themes checked at desktop (1280) and mobile (390), including the action library.
+- No code comments, no debug logging in app code, no external network requests (CSP `default-src 'self'`).
+- Semantic landmarks (`header`, `aside`, `main`, `footer`), ARIA on the palette listbox, and `prefers-reduced-motion` support.
 
 ## Testing
 - **Core**: schema coercion/validation, workflow (de)serialization and rejection of bad files, `$param` resolution, history, store, hash, Myers diff, escape helpers.

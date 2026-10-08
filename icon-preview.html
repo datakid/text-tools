@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sluice icon preview</title>
+<link rel="icon" href="icons/sluice.svg" type="image/svg+xml">
+<style>
+  body { margin: 0; font: 13px system-ui, sans-serif; display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+  section { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+  .light { background: #f6f3ec; color: #1f2a29; }
+  .dark { background: #141c1b; color: #e9e4d8; }
+  .row { display: flex; align-items: end; gap: 22px; }
+  .tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 10px 10px 0 0; }
+  .light .tab { background: #fff; } .dark .tab { background: #23302e; }
+</style>
+</head>
+<body>
+<section class="light"><strong>Light theme</strong>
+  <div class="row"><img src="icons/sluice-light.svg" width="16" alt=""><img src="icons/sluice-light.svg" width="24" alt=""><img src="icons/sluice-light.svg" width="32" alt=""><img src="icons/sluice-light.svg" width="64" alt=""><img src="icons/sluice-light.svg" width="128" alt=""></div>
+  <span class="tab"><img src="icons/sluice-light.svg" width="16" alt="">Sluice — local-first text workbench</span>
+</section>
+<section class="dark"><strong>Dark theme</strong>
+  <div class="row"><img src="icons/sluice-dark.svg" width="16" alt=""><img src="icons/sluice-dark.svg" width="24" alt=""><img src="icons/sluice-dark.svg" width="32" alt=""><img src="icons/sluice-dark.svg" width="64" alt=""><img src="icons/sluice-dark.svg" width="128" alt=""></div>
+  <span class="tab"><img src="icons/sluice-dark.svg" width="16" alt="">Sluice — local-first text workbench</span>
+</section>
+</body>
+</html>

@@ -19,7 +19,7 @@ export function renderStatusStrip(container, store) {
       `${stats.docs} doc${stats.docs === 1 ? '' : 's'}`,
       `${stats.lines.toLocaleString()} lines`,
       `${stats.chars.toLocaleString()} chars`,
-      `${stats.bytes.toLocaleString()} bytes`,
+      ...(matchMedia('(max-width: 820px)').matches ? [] : [`${stats.bytes.toLocaleString()} bytes`]),
       `${enabled} step${enabled === 1 ? '' : 's'}`,
       `${lastRunMs ?? 0} ms (${mode})`
     ].join(' \u00b7 ');
