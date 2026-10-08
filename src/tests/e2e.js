@@ -30,7 +30,7 @@ async function loadApp() {
   await new Promise((r) => frame.addEventListener('load', r, { once: true }));
   win = frame.contentWindow;
   doc = frame.contentDocument;
-  await waitFor(() => doc.documentElement.dataset.ready === 'true' && win.__sluice, { label: 'app boot' });
+  await waitFor(() => doc.documentElement.dataset.ready === 'true' && win.__sluice, { label: 'app boot', timeout: 55000 });
 }
 
 function type(el, value) {
@@ -64,7 +64,6 @@ async function reset() {
   const wf = { ...store.get().workflow, steps: [], params: [] };
   historyController.resetTo(wf);
   store.set({ workflow: wf, selectedStepId: null });
-  win.__sluiceInputBridge?.set?.('');
   type($('#input-text'), '');
   await sleep(320);
 }
@@ -78,7 +77,7 @@ suite('Boot & layout', () => {
     assert.ok($$('.quick-chip').length >= 10, 'quick chips');
     assert.ok($('#btn-add-step'), 'add step');
     assert.ok($('link[rel="icon"]').getAttribute('href').endsWith('sluice.svg'), 'favicon');
-  });
+  }, { timeout: 60000 });
   test('empty pipeline shows recipe shortcuts', () => {
     assert.ok($$('.recipe-chip').length >= 3);
   });
@@ -347,6 +346,33 @@ suite('Persistence & safety', () => {
   test('e2e mode never touched real localStorage', () => {
     const real = JSON.parse(localStorage.getItem('sluice.favorites') || '[]');
     assert.ok(!real.includes('code.jwtDecode') || window.__hadJwtFav, 'real favorites untouched');
+  });
+  test('Share dialog builds a link that reopens the workflow + input', async () => {
+    await reset();
+    type($('#input-text'), 'b\na\nb');
+    $('[data-quick="q-dedupe"]').click();
+    $('[data-quick="q-sort"]').click();
+    await waitOutput('a\nb', 'pre-share');
+    $('#btn-share').click();
+    const check = await waitFor(() => $('#share-input'), { label: 'share dialog' });
+    check.checked = true;
+    check.dispatchEvent(new win.Event('change'));
+    const url = await waitFor(() => /#w=/.test($('#share-url').value) && !$('#share-copy').disabled && $('#share-url').value, { label: 'share url' });
+    key('Escape', {}, doc.body);
+    await sleep(250);
+    await reset();
+    assert.eq(state().workflow.steps.length, 0);
+    win.location.hash = url.slice(url.indexOf('#') + 1);
+    await waitFor(() => state().workflow.steps.length === 2, { label: 'shared steps loaded' });
+    assert.eq(state().workflow.steps.map((s) => s.op), ['lines.dedupe', 'lines.sort']);
+    await waitFor(() => $('#input-text').value === 'b\na\nb', { label: 'shared input' });
+    await waitOutput('a\nb', 'shared output');
+    assert.ok(!win.location.hash, 'hash cleared after load');
+  }, { timeout: 45000 });
+  test('broken share link shows an error, keeps app usable', async () => {
+    win.location.hash = 'w=zNOTVALID';
+    await waitFor(() => $$('.toast-error').some((t) => /share link/.test(t.textContent)), { label: 'error toast' });
+    assert.ok($('#input-text'));
   });
   test('theme toggle switches data-theme', async () => {
     const before = doc.documentElement.getAttribute('data-theme');

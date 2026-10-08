@@ -176,6 +176,7 @@ export function openPalette(store, engine, { category = 'all', query = '' } = {}
         el.className = 'palette-item';
         el.setAttribute('role', 'option');
         el.tabIndex = -1;
+        el.id = `palette-opt-${items.length}`;
         if (row.kind === 'recipe') {
           el.dataset.recipe = row.recipe.id;
           el.innerHTML = `<span class="item-glyph item-glyph-recipe" aria-hidden="true">\u2318</span><span class="item-main"><span class="item-name">${escapeHtml(row.recipe.name)}</span><span class="item-summary">${escapeHtml(row.recipe.blurb)} \u00b7 ${row.recipe.steps.length} steps</span></span>`;
@@ -228,7 +229,7 @@ export function openPalette(store, engine, { category = 'all', query = '' } = {}
       el.setAttribute('aria-selected', String(j === active));
     });
     if (scroll) items[active].scrollIntoView({ block: 'nearest' });
-    search.setAttribute('aria-activedescendant', '');
+    search.setAttribute('aria-activedescendant', items[active].id);
     clearTimeout(detailTimer);
     const target = items[active];
     detailTimer = setTimeout(() => {

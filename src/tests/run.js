@@ -10,6 +10,7 @@ import { fnv1a64 } from '../core/hash.js';
 import { encodeEscapes, decodeEscapes } from '../core/escapes.js';
 import { runChain, clearCache } from '../worker/executor.js';
 import { createRunner, assert } from './harness.js';
+import { encodeShare, decodeShare, shareTokenFromHash, unpackPayload } from '../core/share.js';
 
 function makeDoc(text, i) {
   return { id: `doc_${i}`, name: `doc_${i}`, text, meta: {} };
@@ -153,6 +154,48 @@ export async function runTests() {
       assert.eq(encodeEscapes('a\tb\nc'), 'a\\tb\\nc');
       assert.eq(decodeEscapes('a\\tb\\nc'), 'a\tb\nc');
       assert.eq(decodeEscapes('keep \\\\n literal'), 'keep \\\\n literal');
+    });
+  });
+
+  suite('Share links', () => {
+    const wf = createWorkflow('Share \u2014 caf\u00e9 \ud83d\ude00');
+    wf.steps.push(createStep('lines.dedupe', { caseInsensitive: true }));
+    const off = createStep('text.case', { mode: 'upper' });
+    off.enabled = false;
+    wf.steps.push(off);
+    wf.params = [{ key: 'sep', label: 'Sep', type: 'string', default: ',' }];
+    test('round-trips steps, params, enabled flags and unicode input', async () => {
+      const token = await encodeShare(wf, 'a\nA\n\u4f60\u597d \ud83d\udc4b');
+      assert.match(token, /^[zj][A-Za-z0-9_-]+$/);
+      const { workflow, input } = await decodeShare(token);
+      assert.eq(workflow.meta.name, wf.meta.name);
+      assert.eq(workflow.steps.map((s) => [s.op, s.params, s.enabled]), [['lines.dedupe', { caseInsensitive: true }, true], ['text.case', { mode: 'upper' }, false]]);
+      assert.eq(workflow.params, wf.params);
+      assert.eq(input, 'a\nA\n\u4f60\u597d \ud83d\udc4b');
+      assert.ok(workflow.meta.id !== wf.meta.id, 'gets a fresh id');
+    });
+    test('omits input when not requested', async () => {
+      const { input } = await decodeShare(await encodeShare(wf, null));
+      assert.eq(input, null);
+    });
+    test('compresses: 20-step workflow stays under 2 KB', async () => {
+      const big = createWorkflow('Big');
+      for (let i = 0; i < 20; i++) big.steps.push(createStep('find.replace', { find: `word${i}`, replaceWith: `other${i}` }));
+      const token = await encodeShare(big, null);
+      assert.ok(token.length < 2000, `token is ${token.length}`);
+    });
+    test('rejects tampered, foreign and malicious payloads', async () => {
+      await assert.throws(() => decodeShare('xabc'), /Not a Sluice/);
+      await assert.throws(() => decodeShare('zAAAA'));
+      await assert.throws(() => unpackPayload({ v: 2, s: [] }), /Not a Sluice/);
+      await assert.throws(() => unpackPayload({ v: 1, s: [['evil.op', {}]] }), /invalid steps/);
+      await assert.throws(() => unpackPayload({ v: 1, s: [], p: [{ key: '__proto__!' }] }), /parameters/);
+    });
+    test('parses only #w= hashes', () => {
+      assert.eq(shareTokenFromHash('#w=zAbc_-1'), 'zAbc_-1');
+      assert.eq(shareTokenFromHash('#other'), null);
+      assert.eq(shareTokenFromHash('#w=bad token'), null);
+      assert.eq(shareTokenFromHash(''), null);
     });
   });
 

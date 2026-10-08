@@ -224,6 +224,18 @@
 .toast-action:hover { background: oklch(100% 0 0 / .28); }
 
 #btn-library-actions { height: 32px; }
+
+.share-body { display: flex; flex-direction: column; gap: var(--sp-2); }
+.share-row { display: flex; gap: 6px; }
+.share-row input { flex: 1; min-width: 0; font-family: var(--f-mono); font-size: var(--fs-1) !important; }
+.share-check { display: flex; align-items: center; gap: 8px; font-size: var(--fs-1); cursor: pointer; }
+.share-check input { accent-color: var(--c-verdigris); width: 16px; height: 16px; }
+.share-check input:disabled + * , .share-check:has(input:disabled) { opacity: .55; cursor: not-allowed; }
+.share-note { font-size: var(--fs-1); color: var(--c-ink-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}
 .app-header .btn-icon:disabled { opacity: .3; }
 
 @media (max-width: 1100px) {

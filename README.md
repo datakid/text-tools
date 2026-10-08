@@ -32,6 +32,11 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 - Base64 decode wiped the text on invalid input. It now leaves the text unchanged, and also accepts URL-safe and unpadded input and line-wrapped base64.
 - A modal that was still closing could block the next dialog's keyboard handling.
 
+### Share links
+- **Share** button in the header builds a link like `index.html#w=z…` that contains the whole workflow (steps, settings, on/off state, workflow params), deflate-compressed and base64url-encoded. You can optionally include the input text (up to 20,000 characters).
+- Nothing is uploaded. The data lives only in the URL fragment, which browsers never send to a server.
+- Opening a link loads an editable copy with a fresh id, removes the hash from the address bar, and offers **Undo**. Broken or tampered links show an error toast. Every op and param key is checked by the same rules as file import, so a link can't inject unknown operations.
+
 ### Favicon
 `icons/sluice.svg` is a flatter, minimal version of the original mark: a gold gate bar with cream bars on the left and teal bars on the right, on a dark rounded tile. `icons/sluice-mask.svg` is a monochrome version for mask-icon/monochrome use. Both are referenced from `manifest.webmanifest`.
 
@@ -40,8 +45,9 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 |---|---|
 | `index.html` | The app |
 | `index.html?e2e` | Ephemeral mode: storage is in memory only, and `window.__sluice` is exposed (used by the tests) |
-| `tests.html` | Unit + operation suite: **286 tests** |
-| `e2e.html` | End-to-end UI suite, driving the real app in an iframe: **36 tests** |
+| `index.html#w=<token>` | Opens a shared workflow |
+| `tests.html` | Unit + operation suite: **291 tests** |
+| `e2e.html` | End-to-end UI suite, driving the real app in an iframe: **38 tests** |
 | `smoke.html` | Worker smoke test |
 | `demo.html`, `demo-palette.html`, `demo-browse.html`, `demo-input.html` | Pre-staged UI states for screenshots |
 
@@ -67,5 +73,4 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 - Exporting multiple docs as a ZIP or separate files (only "copy all" and "download .txt" exist).
 - Previewing on a sample whose size the user can set, and streaming for inputs above about 50 MB.
 - Drag-and-drop from the library onto a specific position in the pipeline.
-- Sharing workflows as URLs (encode the workflow JSON into the hash).
 - Real keyboard reordering inside the library, and user-defined custom quick-bar order.

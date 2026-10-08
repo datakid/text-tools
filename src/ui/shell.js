@@ -14,6 +14,7 @@ import { openModal } from './modal.js';
 import { MANIFEST } from '../ops/index.js';
 import { CATEGORIES } from '../core/catalog.js';
 import { toast } from './toast.js';
+import { openShareDialog, loadSharedFromHash } from './shareDialog.js';
 
 const MODKEY = /Mac|iPhone|iPad/.test(navigator.platform || '') ? '\u2318' : 'Ctrl';
 
@@ -57,6 +58,7 @@ export function mountShell(root, store, engine, historyController) {
       <span class="header-sep" aria-hidden="true"></span>
       <button class="btn btn-ghost" id="btn-export" type="button" title="Export as .sluice.json">Export</button>
       <button class="btn btn-ghost" id="btn-import" type="button" title="Import a .sluice.json">Import</button>
+      <button class="btn btn-ghost" id="btn-share" type="button" title="Copy a link that contains this workflow">Share</button>
       <input type="file" id="import-input" accept=".json" class="hidden">
       <button class="btn btn-ghost btn-icon" id="btn-help" type="button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
       <button class="btn btn-icon" id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">\u25D1</button>
@@ -127,6 +129,9 @@ export function mountShell(root, store, engine, historyController) {
   root.querySelector('#btn-library').addEventListener('click', () => openLibrary(store, historyController));
   root.querySelector('#btn-library-actions').addEventListener('click', () => openPalette(store, engine));
   root.querySelector('#btn-help').addEventListener('click', openShortcuts);
+  root.querySelector('#btn-share').addEventListener('click', () => openShareDialog(store));
+  window.addEventListener('hashchange', () => loadSharedFromHash(store, engine, historyController));
+  requestAnimationFrame(() => loadSharedFromHash(store, engine, historyController));
   const undoBtn = root.querySelector('#btn-undo');
   const redoBtn = root.querySelector('#btn-redo');
   undoBtn.addEventListener('click', () => { historyController.undo(); paintHistory(); });
