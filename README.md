@@ -1,51 +1,75 @@
-# Sluice v2 — local-first text workbench
+# Sluice
 
-Quick text tools and repeatable pipelines that run 100% in the browser. Paste text, click a tool, copy the result. Or chain tools into a saved, re-runnable workflow. No server, no uploads, no tracking.
+A local-first text workbench. Paste text, click a tool, copy the result. Or chain tools into a saved pipeline you can run again. It runs 100% in the browser: no server, no uploads, no tracking.
 
-## What's new in v2
+![Sluice with a three-step pipeline, input, live output and the step inspector](docs/screenshot.png)
 
-### Organization & speed
-- **Action library (`Ctrl/⌘ K` or the "Actions" button)**: a three-column browser.
-  - **Category rail**: All, ★ Favorites, Recent, Recipes, plus 12 color-coded categories (Text, Whitespace, Lines, Find & replace, Extract, JSON & CSV, Encode, Split, Merge, Generate, Analyze, Flow), each with a count.
-  - **Ranked search** over names, categories and synonyms ("unique" finds Dedupe, "grep" finds Filter, "sql" finds Lines to list).
-  - **Live preview pane**: shows before/after on *your* input (or the built-in example when the input is empty).
-  - Keys: `↵` adds the step · `⇧↵` applies to the input right away · `Alt ←/→` switches category · `Alt S` stars a tool · `Esc` clears the search, then closes.
-- **Quick bar** above the editor: one-click chips for the most common tools, plus your starred favorites. `Shift+click` applies a tool straight to the input without adding a step.
-- **"Use as input"** puts the output into the input box and clears the steps, so you can chain quick edits. Undo is available.
-- **Recipes**: 8 ready-made multi-step pipelines (clean a list, unique emails, IDs to SQL `IN (…)`, CSV to Markdown, top words, LLM chunking, clean pasted prose, inspect a JWT).
-- **Undo toasts** on every destructive action: delete step, clear steps, clear input, apply, bake.
-- Header **undo/redo** buttons, a **`?` shortcut sheet**, and **Paste** and **Sample** buttons on the input.
+**Try it:** https://text-tools-kohl.vercel.app
 
-### Better UX
-- Step cards show a **live one-line summary of their settings** (e.g. "Sort natural") and a colored category badge. Errors and notes show on the card itself.
-- The inspector adds **prev/next step navigation**, **favorite**, **reset settings**, **enable/disable**, and **worked examples** with a "Use these settings" button.
-- **Exact live preview**: inputs up to 256 KB are now processed in full as you type, so Sort, Dedupe, Filter and similar tools show real results instead of "Run to see result". Larger inputs fall back to a clearly labeled "sample preview".
-- Single-line fields accept `\n` and `\t`. List fields ("one per line") are now real multi-line text areas.
-- The output shows line/char counts with the change vs. input. The diff view gets a +/− summary. The status strip shows the step count and preview mode.
+## What it does
 
-### New tools (110 total, up from 100)
-`Remove characters` (invisible/zero-width, control, emoji, non-ASCII, punctuation, digits, custom set) · `Straighten / curl quotes` · `Decode JWT` · `Unicode escape` · `Validate JSON` (+ JSON Lines) · `Random sample lines` · `Align columns` · `Lines to list` (bullets, numbered, checklist, comma, quoted, SQL IN, JSON array, HTML, "a, b, and c") · `Split items onto lines` · `Generate UUIDs`.
+**110 tools in 12 categories**
+- **Text:** case, Unicode, quotes, padding, wrapping.
+- **Whitespace:** trim, indent, tabs, blank lines.
+- **Lines:** sort, dedupe, filter, number, list.
+- **Find and replace:** replace, highlight, count matches.
+- **Extract:** emails, URLs, numbers, columns, HTML.
+- **JSON and CSV:** format, validate, convert, reshape.
+- **Encode:** Base64, URL, HTML, hex, JWT, hashes.
+- **Split:** cut one document into many.
+- **Merge:** join, zip, interleave documents.
+- **Generate:** sequences, UUIDs, lorem, lists.
+- **Analyze:** stats, frequency, diff, regex test.
+- **Flow:** select, rename, batch, assert, script.
 
-### Bugs fixed
-- `Transpose`, `Zip`, `Interleave` and `Reduce to table` crashed with a RangeError on very large inputs (around 125k+ lines) because they spread arrays into `Math.max`.
-- Numeric sort was broken when there were several non-numeric lines (`Infinity − Infinity = NaN`).
-- Base64 decode wiped the text on invalid input. It now leaves the text unchanged, and also accepts URL-safe and unpadded input and line-wrapped base64.
-- A modal that was still closing could block the next dialog's keyboard handling.
+**Quick use**
+- A quick bar of one-click chips for common tools, plus your starred favourites. Shift+click applies a tool straight to the input.
+- The action library (`Ctrl/⌘ K`) is a three-column browser with a category rail, ranked search over names, categories and synonyms ("unique" finds Dedupe, "grep" finds Filter), and a live before and after preview on your own input.
+- "Use as input" moves the output into the input and clears the steps, so you can chain quick edits.
 
-### Share links
-- **Share** button in the header builds a link like `index.html#w=z…` that contains the whole workflow (steps, settings, on/off state, workflow params), deflate-compressed and base64url-encoded. You can optionally include the input text (up to 20,000 characters).
-- Nothing is uploaded. The data lives only in the URL fragment, which browsers never send to a server.
-- Opening a link loads an editable copy with a fresh id, removes the hash from the address bar, and offers **Undo**. Broken or tampered links show an error toast. Every op and param key is checked by the same rules as file import, so a link can't inject unknown operations.
+**Pipelines**
+- Each tool is a step with its own settings. Steps can be disabled, reordered and edited, and each card shows a one-line summary of its settings.
+- Live preview processes inputs up to 256 KB in full as you type. Larger inputs fall back to a labelled sample preview.
+- Output views: Text, Diff, Find and Stats. Several documents can be open as tabs.
+- 8 ready-made recipes: clean a list, unique emails, IDs to SQL `IN (…)`, CSV to Markdown, top words, LLM chunking, clean pasted prose, inspect a JWT.
+- Saved workflows with run history and workflow parameters. Workflows export to and import from files.
+- Undo and redo, with undo toasts on every destructive action.
+- Share links carry the whole workflow in the URL fragment, compressed. Including the input text is optional, up to 20,000 characters. Every operation and parameter in a link is checked by the same rules as file import.
+- The `script` step runs your own JavaScript in a sandboxed sub-worker with network APIs removed.
 
-### Favicon & logo
-- The mark is simplified for small sizes: a gold center bar with two bars on each side, drawn on a 16-unit grid. It stays crisp at 16 px and scales cleanly as SVG.
-- **Theme-aware**:
-  - `icons/sluice-light.svg` uses a cream tile, ink bars and teal bars.
-  - `icons/sluice-dark.svg` uses a dark tile, cream bars and bright teal bars.
-  - The app swaps the favicon, the header logo and `theme-color` whenever the theme toggles.
-  - `icons/sluice.svg` adapts on its own through `prefers-color-scheme`, for pages that don't run the app.
-- `icons/sluice-mask.svg` is the single-color version.
-- `icon-preview.html` shows every size on both backgrounds.
+**Around it**
+- Light and dark themes. The favicon, logo and theme colour follow the theme.
+- Keyboard shortcuts, with a `?` help sheet. Semantic landmarks, ARIA on the palette, and reduced-motion support.
+
+## What it does not do
+
+- Exporting multiple docs as a ZIP or separate files (only "copy all" and "download .txt" exist).
+- Previewing on a sample whose size the user can set, and streaming for inputs above about 50 MB.
+- Drag-and-drop from the library onto a specific position in the pipeline.
+- Real keyboard reordering inside the library, and user-defined custom quick-bar order.
+- It has no server, no accounts and no sync. Workflows and history stay in the browser that made them.
+
+## Privacy
+
+Nothing is uploaded and nothing is tracked. The Content Security Policy limits requests to the app's own origin, and the app has no backend. What it stores in your browser:
+- IndexedDB `sluice`: saved workflows, run history, the current workflow and preferences.
+- `localStorage`: the input draft, the theme, favourites (`sluice.favorites`) and recent tools (`sluice.recent`).
+
+Share links hold their data in the URL fragment, which browsers never send to a server.
+
+## Built with
+
+- **No dependencies, no build step.** Plain ES modules and CSS tokens. Each tool is one module in `src/ops/`, loaded on demand.
+- **Web Workers.** The pipeline runs in a module worker with a content-hash cache. The `script` step runs in a sub-worker with network APIs removed.
+- **Tests run in the browser:** `tests.html` (291 tests) and `e2e.html` (38 tests, driving the real app in an iframe). Both pass.
+
+## Run locally
+
+```
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000`.
 
 ## Entry points
 | Path | Purpose |
@@ -57,13 +81,6 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 | `e2e.html` | End-to-end UI suite, driving the real app in an iframe: **38 tests** |
 | `smoke.html` | Worker smoke test |
 | `demo*.html`, `icon-preview.html` | Pre-staged UI states (light/dark, palette, mobile) and icon sizes for visual QA. Safe to delete before shipping. |
-
-## Ship checklist (verified)
-- 291/291 unit and op tests, 38/38 E2E UI tests, and the smoke test all pass.
-- Clean boot with no app console errors. The only error is the preview host's injected analytics beacon, which the app's strict CSP correctly blocks.
-- Light and dark themes checked at desktop (1280) and mobile (390), including the action library.
-- No code comments, no debug logging in app code, no external network requests (CSP `default-src 'self'`).
-- Semantic landmarks (`header`, `aside`, `main`, `footer`), ARIA on the palette listbox, and `prefers-reduced-motion` support.
 
 ## Testing
 - **Core**: schema coercion/validation, workflow (de)serialization and rejection of bad files, `$param` resolution, history, store, hash, Myers diff, escape helpers.
@@ -83,8 +100,4 @@ Quick text tools and repeatable pipelines that run 100% in the browser. Paste te
 - IndexedDB `sluice` (stores `workflows`, `runs`, `prefs`): saved workflows, run history, current workflow. `localStorage`: the input draft and the theme.
 - No backend or Table API is used. Everything stays on the device.
 
-## Not yet implemented / next steps
-- Exporting multiple docs as a ZIP or separate files (only "copy all" and "download .txt" exist).
-- Previewing on a sample whose size the user can set, and streaming for inputs above about 50 MB.
-- Drag-and-drop from the library onto a specific position in the pipeline.
-- Real keyboard reordering inside the library, and user-defined custom quick-bar order.
+More: [`CHANGELOG.md`](CHANGELOG.md) · [`docs/ship-checklist.md`](docs/ship-checklist.md)
