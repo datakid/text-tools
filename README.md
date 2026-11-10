@@ -101,3 +101,7 @@ Then open `http://localhost:8000`.
 - No backend or Table API is used. Everything stays on the device.
 
 More: [`CHANGELOG.md`](CHANGELOG.md) · [`docs/ship-checklist.md`](docs/ship-checklist.md)
+
+## License
+
+MIT. See `LICENSE`.
